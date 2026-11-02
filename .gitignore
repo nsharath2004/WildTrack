@@ -1,0 +1,8 @@
+# Dependencies
+**/node_modules/
+**/.next/
+
+# Environment files
+.env
+.env.*
+!.env.example
