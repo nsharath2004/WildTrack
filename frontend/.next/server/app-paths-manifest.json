@@ -1,0 +1,7 @@
+{
+  "/sightings/page": "app/sightings/page.js",
+  "/protected-areas/page": "app/protected-areas/page.js",
+  "/threats/page": "app/threats/page.js",
+  "/animals/page": "app/animals/page.js",
+  "/research/page": "app/research/page.js"
+}

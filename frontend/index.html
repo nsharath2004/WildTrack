@@ -1,0 +1,2363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WildTrack – Wildlife Conservation & Management</title>
+
+  <!-- Bootstrap 5 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+
+  <!-- React 18 CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <!-- Babel Standalone for JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #1a4d2e;
+      --secondary: #2d6a4f;
+      --accent: #74c69d;
+      --dark: #0d1f17;
+      --sidebar-bg: #0d2b1a;
+      --card-bg: #ffffff;
+      --text-dark: #1a1a2e;
+      --warning: #f77f00;
+      --danger: #d62828;
+      --success: #52b788;
+      --bg-light: #f4f7f4;
+    }
+
+    * { font-family: 'Inter', sans-serif; box-sizing: border-box; }
+    body { background: var(--bg-light); margin: 0; padding: 0; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      background: var(--sidebar-bg);
+      width: 260px;
+      height: 100vh;
+      position: fixed;
+      top: 0; left: 0;
+      z-index: 1000;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar::-webkit-scrollbar-thumb { background: #1a4d2e; border-radius: 4px; }
+
+    .sidebar .logo {
+      padding: 20px;
+      border-bottom: 1px solid #1a4d2e;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sidebar .logo .logo-icon {
+      width: 42px; height: 42px;
+      background: linear-gradient(135deg, var(--secondary), var(--accent));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; color: white;
+    }
+    .sidebar .logo-text { color: white; font-weight: 700; font-size: 18px; line-height: 1.1; }
+    .sidebar .logo-sub { color: var(--accent); font-size: 10px; font-weight: 400; letter-spacing: 1px; text-transform: uppercase; }
+
+    .sidebar .nav-section-label {
+      color: #4a7c60;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 16px 20px 6px;
+    }
+
+    .sidebar .nav-link {
+      color: #a8d5b5;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13.5px;
+      font-weight: 400;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      border-radius: 0;
+    }
+    .sidebar .nav-link:hover {
+      background: rgba(26,77,46,0.7);
+      color: var(--accent);
+      border-left-color: var(--accent);
+    }
+    .sidebar .nav-link.active {
+      background: #1a4d2e;
+      color: var(--accent);
+      border-left-color: var(--accent);
+      font-weight: 600;
+    }
+    .sidebar .nav-link i { width: 18px; text-align: center; font-size: 14px; }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 12px 0;
+      border-top: 1px solid #1a4d2e;
+    }
+
+    /* ── Main Content ── */
+    .main-content {
+      margin-left: 260px;
+      background: var(--bg-light);
+      min-height: 100vh;
+    }
+
+    /* ── Top Header ── */
+    .top-header {
+      background: white;
+      padding: 16px 28px;
+      border-bottom: 1px solid #e8f0eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .top-header .page-title { font-size: 20px; font-weight: 700; color: var(--text-dark); margin: 0; }
+    .top-header .breadcrumb-sub { font-size: 12px; color: #6c757d; margin: 0; }
+    .header-avatar {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: 700; font-size: 14px;
+    }
+
+    /* ── Page Content ── */
+    .page-content { padding: 24px 28px; }
+
+    /* ── Stat Cards ── */
+    .stat-card {
+      border-radius: 14px;
+      border: none;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: white;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+    .stat-icon {
+      width: 52px; height: 52px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; color: white; flex-shrink: 0;
+    }
+    .stat-value { font-size: 28px; font-weight: 700; color: var(--text-dark); line-height: 1; }
+    .stat-label { font-size: 12px; color: #6c757d; font-weight: 500; margin-top: 4px; }
+
+    /* ── Tables ── */
+    .data-table { background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); overflow: hidden; }
+    .data-table .table { margin: 0; }
+    .data-table .table th {
+      background: var(--primary);
+      color: white;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 12px 16px;
+      border: none;
+    }
+    .data-table .table td { padding: 12px 16px; vertical-align: middle; font-size: 13.5px; border-color: #f0f0f0; }
+    .data-table .table tbody tr:hover { background: #f8fbf9; }
+    .data-table-header {
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .data-table-header h6 { margin: 0; font-weight: 700; font-size: 15px; color: var(--text-dark); }
+
+    /* ── Badges ── */
+    .status-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    .badge-endangered     { background: #fde8e8; color: #d62828; }
+    .badge-critically     { background: #1a0000; color: #ff8080; }
+    .badge-vulnerable     { background: #fff0e0; color: #f77f00; }
+    .badge-near           { background: #fffbe0; color: #b5860f; }
+    .badge-least          { background: #e8f7ee; color: #2d6a4f; }
+    .badge-extinct        { background: #2a2a2a; color: #ccc; }
+    .badge-healthy        { background: #e8f7ee; color: #2d6a4f; }
+    .badge-sick           { background: #fde8e8; color: #d62828; }
+    .badge-injured        { background: #fff0e0; color: #f77f00; }
+    .badge-recovering     { background: #e8f0ff; color: #3b5bdb; }
+    .badge-active         { background: #e8f7ee; color: #2d6a4f; }
+    .badge-inactive       { background: #f0f0f0; color: #666; }
+    .badge-completed      { background: #e8f0ff; color: #3b5bdb; }
+    .badge-ongoing        { background: #fff0e0; color: #f77f00; }
+    .badge-pending        { background: #fffbe0; color: #b5860f; }
+    .badge-resolved       { background: #e8f7ee; color: #2d6a4f; }
+    .badge-critical-sev   { background: #fde8e8; color: #d62828; }
+    .badge-high-sev       { background: #fff0e0; color: #f77f00; }
+    .badge-medium-sev     { background: #fffbe0; color: #b5860f; }
+    .badge-low-sev        { background: #e8f7ee; color: #2d6a4f; }
+
+    /* ── Buttons ── */
+    .btn-wildlife {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-wildlife:hover { background: var(--secondary); color: white; }
+    .btn-sm-icon {
+      width: 30px; height: 30px;
+      border-radius: 6px;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+      transition: opacity 0.2s;
+    }
+    .btn-sm-icon:hover { opacity: 0.8; }
+
+    /* ── Modal ── */
+    .modal-header-wildlife {
+      background: var(--primary);
+      color: white;
+      border-radius: 12px 12px 0 0;
+    }
+    .modal-header-wildlife .btn-close { filter: invert(1); }
+    .modal-content { border-radius: 12px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+    .form-label { font-size: 12.5px; font-weight: 600; color: #444; }
+    .form-control, .form-select {
+      border-radius: 8px;
+      border: 1.5px solid #e0e0e0;
+      font-size: 13.5px;
+      padding: 8px 12px;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 3px rgba(45,106,79,0.15);
+    }
+
+    /* ── Charts ── */
+    .chart-card {
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      padding: 20px;
+    }
+    .chart-card h6 { font-weight: 700; color: var(--text-dark); margin-bottom: 16px; }
+
+    /* ── Toast ── */
+    .toast-container-custom {
+      position: fixed;
+      top: 20px; right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .toast-custom {
+      padding: 12px 20px;
+      border-radius: 10px;
+      color: white;
+      font-size: 13.5px;
+      font-weight: 500;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      animation: slideIn 0.3s ease;
+      min-width: 260px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .toast-success { background: #2d6a4f; }
+    .toast-error   { background: #d62828; }
+    @keyframes slideIn {
+      from { transform: translateX(100px); opacity: 0; }
+      to   { transform: translateX(0);     opacity: 1; }
+    }
+
+    /* ── DBMS Concepts ── */
+    .concept-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      padding: 20px;
+      height: 100%;
+    }
+    .concept-card pre {
+      background: #0d1f17;
+      color: #74c69d;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 11.5px;
+      margin-top: 10px;
+      overflow-x: auto;
+      max-height: 160px;
+    }
+    .concept-tag {
+      display: inline-block;
+      background: #e8f7ee;
+      color: var(--primary);
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 10.5px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    /* ── Loading ── */
+    .loading-overlay {
+      display: flex; align-items: center; justify-content: center;
+      padding: 60px;
+      flex-direction: column;
+      gap: 12px;
+      color: var(--secondary);
+    }
+
+    /* ── Search ── */
+    .search-box {
+      position: relative;
+      max-width: 260px;
+    }
+    .search-box input { padding-left: 36px; }
+    .search-box i {
+      position: absolute;
+      left: 12px; top: 50%;
+      transform: translateY(-50%);
+      color: #aaa;
+      font-size: 13px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .sidebar { width: 60px; }
+      .sidebar .logo-text, .sidebar .logo-sub,
+      .sidebar .nav-section-label, .sidebar .nav-link span { display: none; }
+      .main-content { margin-left: 60px; }
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+const API = 'http://localhost:5000/api';
+
+// ── Toast Context ─────────────────────────────────────────────────────────────
+function useToast() {
+  const [toasts, setToasts] = useState([]);
+  const addToast = useCallback((msg, type = 'success') => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, msg, type }]);
+    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 3500);
+  }, []);
+  return { toasts, addToast };
+}
+
+function ToastContainer({ toasts }) {
+  return (
+    <div className="toast-container-custom">
+      {toasts.map(t => (
+        <div key={t.id} className={`toast-custom toast-${t.type}`}>
+          <i className={`fas ${t.type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}`}></i>
+          {t.msg}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── API Helpers ───────────────────────────────────────────────────────────────
+async function apiFetch(url, options = {}) {
+  let res;
+  try {
+    res = await fetch(url, {
+      headers: { 'Content-Type': 'application/json' },
+      ...options
+    });
+  } catch (netErr) {
+    throw new Error('Cannot reach Flask backend server at http://localhost:5000. Is "python app.py" running in the terminal?');
+  }
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || err.message || `Server returned HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+// ── Status Badges ─────────────────────────────────────────────────────────────
+function ConservationBadge({ status }) {
+  const map = {
+    'Endangered':           'badge-endangered',
+    'Critically Endangered':'badge-critically',
+    'Vulnerable':           'badge-vulnerable',
+    'Near Threatened':      'badge-near',
+    'Least Concern':        'badge-least',
+    'Extinct':              'badge-extinct',
+  };
+  return <span className={`status-badge ${map[status] || 'badge-least'}`}>{status}</span>;
+}
+
+function HealthBadge({ status }) {
+  const map = {
+    'Healthy':    'badge-healthy',
+    'Sick':       'badge-sick',
+    'Injured':    'badge-injured',
+    'Recovering': 'badge-recovering',
+  };
+  return <span className={`status-badge ${map[status] || 'badge-healthy'}`}>{status}</span>;
+}
+
+function SeverityBadge({ severity }) {
+  const map = {
+    'Critical': 'badge-critical-sev',
+    'High':     'badge-high-sev',
+    'Medium':   'badge-medium-sev',
+    'Low':      'badge-low-sev',
+  };
+  return <span className={`status-badge ${map[severity] || 'badge-medium-sev'}`}>{severity}</span>;
+}
+
+function StatusBadge({ status }) {
+  const map = {
+    'Active':     'badge-active',
+    'Inactive':   'badge-inactive',
+    'Completed':  'badge-completed',
+    'Ongoing':    'badge-ongoing',
+    'Pending':    'badge-pending',
+    'Resolved':   'badge-resolved',
+    'Planning':   'badge-pending',
+  };
+  return <span className={`status-badge ${map[status] || 'badge-pending'}`}>{status}</span>;
+}
+
+// ── Loading Spinner ────────────────────────────────────────────────────────────
+function Spinner() {
+  return (
+    <div className="loading-overlay">
+      <div className="spinner-border" style={{color:'var(--secondary)'}} role="status"></div>
+      <span style={{color:'var(--secondary)',fontWeight:500}}>Loading data…</span>
+    </div>
+  );
+}
+
+// ── Error Alert ────────────────────────────────────────────────────────────────
+function ErrorAlert({ msg }) {
+  return (
+    <div className="alert alert-danger m-3" role="alert">
+      <i className="fas fa-exclamation-circle me-2"></i>
+      {msg || 'Failed to load data. Make sure the backend is running.'}
+    </div>
+  );
+}
+
+// ── Page Header ────────────────────────────────────────────────────────────────
+function BackendIndicator() {
+  const [online, setOnline] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    const check = () => {
+      fetch(`${API}/health`)
+        .then(res => res.ok ? res.json() : Promise.reject())
+        .then(() => { if (active) setOnline(true); })
+        .catch(() => { if (active) setOnline(false); });
+    };
+    check();
+    const timer = setInterval(check, 8000);
+    return () => { active = false; clearInterval(timer); };
+  }, []);
+
+  if (online === null) {
+    return (
+      <span style={{fontSize:12,color:'#6c757d'}}>
+        <i className="fas fa-spinner fa-spin me-1 text-warning" style={{fontSize:10}}></i>
+        Connecting to API...
+      </span>
+    );
+  }
+
+  if (online) {
+    return (
+      <span style={{fontSize:12,color:'#2d6a4f',fontWeight:500}}>
+        <i className="fas fa-circle me-1" style={{color:'#52b788',fontSize:9}}></i>
+        Backend Online
+      </span>
+    );
+  }
+
+  return (
+    <span style={{fontSize:12,color:'#d62828',fontWeight:500}} title="Make sure 'python app.py' is running in the backend folder">
+      <i className="fas fa-circle me-1" style={{color:'#d62828',fontSize:9}}></i>
+      Backend Offline
+    </span>
+  );
+}
+
+function PageHeader({ title, subtitle, icon }) {
+  return (
+    <div className="top-header">
+      <div>
+        <h1 className="page-title">
+          <i className={`fas ${icon} me-2`} style={{color:'var(--secondary)'}}></i>
+          {title}
+        </h1>
+        {subtitle && <p className="breadcrumb-sub">{subtitle}</p>}
+      </div>
+      <div className="d-flex align-items-center gap-3">
+        <BackendIndicator />
+        <div className="header-avatar" title="WildTrack Administrator">W</div>
+      </div>
+    </div>
+  );
+}
+
+// ── Modal Wrapper ──────────────────────────────────────────────────────────────
+function ModalForm({ show, title, onClose, onSubmit, children, submitting }) {
+  if (!show) return null;
+  return (
+    <div className="modal show d-block" tabIndex="-1" style={{background:'rgba(0,0,0,0.5)'}}>
+      <div className="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div className="modal-content">
+          <div className="modal-header modal-header-wildlife">
+            <h5 className="modal-title"><i className="fas fa-edit me-2"></i>{title}</h5>
+            <button type="button" className="btn-close" onClick={onClose}></button>
+          </div>
+          <div className="modal-body">
+            <form onSubmit={onSubmit}>
+              <div className="row g-3">{children}</div>
+              <div className="d-flex justify-content-end gap-2 mt-4">
+                <button type="button" className="btn btn-outline-secondary" onClick={onClose}>Cancel</button>
+                <button type="submit" className="btn-wildlife" disabled={submitting}>
+                  {submitting ? <><span className="spinner-border spinner-border-sm me-2"></span>Saving…</> : <><i className="fas fa-save me-2"></i>Save</>}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Action Buttons ─────────────────────────────────────────────────────────────
+function ActionBtns({ onEdit, onDelete }) {
+  return (
+    <div className="d-flex gap-1">
+      <button className="btn-sm-icon" style={{background:'#e8f0ff',color:'#3b5bdb'}} onClick={onEdit} title="Edit">
+        <i className="fas fa-pen"></i>
+      </button>
+      <button className="btn-sm-icon" style={{background:'#fde8e8',color:'#d62828'}} onClick={onDelete} title="Delete">
+        <i className="fas fa-trash"></i>
+      </button>
+    </div>
+  );
+}
+
+// ── FormField helpers ──────────────────────────────────────────────────────────
+function FField({ label, children, col = 6 }) {
+  return (
+    <div className={`col-md-${col}`}>
+      <label className="form-label">{label}</label>
+      {children}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════════════════════════════
+const DEMO_PREVIEW_DATA = {
+  s: {
+    total_animals: 15,
+    total_species: 7,
+    protected_areas: 4,
+    total_sightings: 22,
+    endangered_species: 4,
+    active_projects: 4,
+    total_researchers: 5,
+    total_volunteers: 12
+  },
+  pop: [
+    { species_name: 'Bengal Tiger', animal_count: 4 },
+    { species_name: 'Indian Elephant', animal_count: 3 },
+    { species_name: 'Indian Leopard', animal_count: 3 },
+    { species_name: 'Indian Rhinoceros', animal_count: 2 },
+    { species_name: 'Spotted Deer', animal_count: 2 },
+    { species_name: 'Indian Peacock', animal_count: 1 }
+  ],
+  dist: [
+    { conservation_status: 'Endangered', count: 3 },
+    { conservation_status: 'Vulnerable', count: 2 },
+    { conservation_status: 'Near Threatened', count: 1 },
+    { conservation_status: 'Least Concern', count: 1 }
+  ],
+  sightings: [
+    { animal_name: 'Raja', species_name: 'Bengal Tiger', area_name: 'Bandipur National Park', sighting_date: '2026-10-30', observed_by: 'Dr. Ramesh Kumar' },
+    { animal_name: 'Airavata', species_name: 'Indian Elephant', area_name: 'Nagarhole National Park', sighting_date: '2026-10-29', observed_by: 'Ananya Sharma' },
+    { animal_name: 'Bagheera', species_name: 'Indian Leopard', area_name: 'Bandipur National Park', sighting_date: '2026-10-28', observed_by: 'Vikram Singh' },
+    { animal_name: 'Khadga', species_name: 'Indian Rhinoceros', area_name: 'Kaziranga National Park', sighting_date: '2026-10-27', observed_by: 'Ranger Unit Alpha' }
+  ],
+  threats: [
+    { threat_type: 'Poaching Activity', severity: 'Critical', location: 'Bandipur South Buffer Zone', status: 'Active' },
+    { threat_type: 'Wire Snare Traps', severity: 'High', location: 'Nagarhole Forest Boundary', status: 'Active' },
+    { threat_type: 'Habitat Encroachment', severity: 'Medium', location: 'Bannerghatta Outer Ring', status: 'Monitoring' },
+    { threat_type: 'Human-Elephant Conflict', severity: 'High', location: 'Bandipur Farm Border', status: 'Active' }
+  ]
+};
+
+function Dashboard({ addToast }) {
+  const [stats, setStats]     = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError]     = useState('');
+  const [isDemo, setIsDemo]   = useState(false);
+  const barRef = useRef(null);
+  const pieRef = useRef(null);
+  const barChart = useRef(null);
+  const pieChart = useRef(null);
+
+  const loadData = () => {
+    setLoading(true);
+    setError('');
+    Promise.all([
+      apiFetch(`${API}/dashboard/stats`),
+      apiFetch(`${API}/dashboard/population-chart`),
+      apiFetch(`${API}/dashboard/species-distribution`),
+      apiFetch(`${API}/dashboard/recent-sightings`),
+      apiFetch(`${API}/dashboard/recent-threats`),
+    ])
+    .then(([s, pop, dist, sightings, threats]) => {
+      setStats({ s, pop, dist, sightings, threats });
+      setIsDemo(false);
+      setLoading(false);
+    })
+    .catch(e => {
+      setError(e.message || 'Failed to connect to backend');
+      setLoading(false);
+    });
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadDemoData = () => {
+    setStats(DEMO_PREVIEW_DATA);
+    setIsDemo(true);
+    setError('');
+    setLoading(false);
+    if (addToast) addToast('Sample demonstration data loaded successfully!', 'info');
+  };
+
+  useEffect(() => {
+    if (!stats) return;
+    // Bar chart
+    if (barRef.current) {
+      if (barChart.current) barChart.current.destroy();
+      barChart.current = new Chart(barRef.current, {
+        type: 'bar',
+        data: {
+          labels: stats.pop.map(d => d.species_name || d.label),
+          datasets: [{
+            label: 'Population Count',
+            data: stats.pop.map(d => (d.animal_count !== undefined ? d.animal_count : (d.count || d.value || 0))),
+            backgroundColor: ['#1a4d2e','#2d6a4f','#52b788','#74c69d','#95d5b2','#b7e4c7','#40916c','#1b4332'],
+            borderRadius: 6,
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+    }
+    // Pie chart
+    if (pieRef.current) {
+      if (pieChart.current) pieChart.current.destroy();
+      pieChart.current = new Chart(pieRef.current, {
+        type: 'pie',
+        data: {
+          labels: stats.dist.map(d => d.conservation_status || d.label),
+          datasets: [{
+            data: stats.dist.map(d => d.count || d.value || 0),
+            backgroundColor: ['#d62828','#8b0000','#f77f00','#f4d35e','#52b788','#2a2a2a','#3b5bdb'],
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { position: 'right' } }
+        }
+      });
+    }
+    return () => {
+      if (barChart.current) barChart.current.destroy();
+      if (pieChart.current) pieChart.current.destroy();
+    };
+  }, [stats]);
+
+  if (loading) return <Spinner />;
+
+  if (error && !stats) {
+    return (
+      <div className="page-content">
+        <div className="card shadow-sm border-danger mb-4" style={{borderRadius: 12}}>
+          <div className="card-body p-4">
+            <div className="d-flex align-items-center mb-3">
+              <div className="rounded-circle bg-danger text-white p-3 me-3 d-flex align-items-center justify-content-center" style={{width: 50, height: 50}}>
+                <i className="fas fa-exclamation-triangle fa-lg"></i>
+              </div>
+              <div>
+                <h5 className="text-danger fw-bold mb-1">Backend / Database Connection Error</h5>
+                <p className="text-muted small mb-0">The frontend could not fetch live statistics from the MySQL database.</p>
+              </div>
+            </div>
+            <div className="alert alert-secondary py-2 px-3 small font-monospace mb-3" style={{background: '#f8f9fa'}}>
+              <strong>Error Details:</strong> {error}
+            </div>
+            <div className="p-3 bg-light rounded mb-3 small">
+              <strong>Quick Checklist to Fix:</strong>
+              <ol className="mb-0 mt-2 ps-3">
+                <li>Make sure the Flask backend is running in your terminal: <code>python app.py</code> in <code>wildlife-management/backend</code>.</li>
+                <li>Verify your MySQL password in <code>wildlife-management/backend/.env</code> matches your MySQL server password.</li>
+                <li>Ensure the database <code>wildlife_management</code> is created and populated using <code>database/schema.sql</code> and <code>database/sample_data.sql</code>.</li>
+              </ol>
+            </div>
+            <div className="d-flex gap-2">
+              <button className="btn btn-outline-success" onClick={loadData}>
+                <i className="fas fa-sync-alt me-1"></i> Retry Live Connection
+              </button>
+              <button className="btn btn-success" onClick={loadDemoData}>
+                <i className="fas fa-eye me-1"></i> Preview Sample Data (Offline Demo)
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const s = stats.s;
+  const statCards = [
+    { label: 'Total Animals',       value: s.total_animals   || 0, icon: 'fa-paw',               bg: '#1a4d2e' },
+    { label: 'Total Species',       value: s.total_species   || 0, icon: 'fa-dragon',             bg: '#2d6a4f' },
+    { label: 'Protected Areas',     value: s.protected_areas || 0, icon: 'fa-tree',               bg: '#1565c0' },
+    { label: 'Wildlife Sightings',  value: s.total_sightings || 0, icon: 'fa-binoculars',         bg: '#e65100' },
+    { label: 'Endangered Species',  value: s.endangered_species || 0, icon: 'fa-exclamation',    bg: '#c62828' },
+    { label: 'Active Projects',     value: s.active_projects || 0, icon: 'fa-seedling',           bg: '#6a1b9a' },
+    { label: 'Total Researchers',   value: s.total_researchers || 0, icon: 'fa-microscope',      bg: '#283593' },
+    { label: 'Total Volunteers',    value: s.total_volunteers || 0, icon: 'fa-hands-helping',    bg: '#00838f' },
+  ];
+
+  return (
+    <div className="page-content">
+      {isDemo && (
+        <div className="alert alert-info py-2 px-3 small d-flex justify-content-between align-items-center mb-3" style={{borderRadius: 8}}>
+          <span><i className="fas fa-info-circle me-1"></i> <strong>Offline Demonstration Mode:</strong> Displaying realistic sample wildlife data. Start Flask and connect MySQL to view live database records.</span>
+          <button className="btn btn-sm btn-outline-primary py-0" onClick={loadData}>
+            <i className="fas fa-sync-alt me-1"></i> Connect Live DB
+          </button>
+        </div>
+      )}
+      {/* Stat Cards */}
+      <div className="row g-3 mb-4">
+        {statCards.map((c, i) => (
+          <div key={i} className="col-md-3 col-sm-6">
+            <div className="stat-card">
+              <div className="stat-icon" style={{background: c.bg}}>
+                <i className={`fas ${c.icon}`}></i>
+              </div>
+              <div>
+                <div className="stat-value">{c.value}</div>
+                <div className="stat-label">{c.label}</div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Charts */}
+      <div className="row g-3 mb-4">
+        <div className="col-md-7">
+          <div className="chart-card">
+            <h6><i className="fas fa-chart-bar me-2" style={{color:'var(--secondary)'}}></i>Wildlife Population by Species</h6>
+            <canvas ref={barRef} height="160"></canvas>
+          </div>
+        </div>
+        <div className="col-md-5">
+          <div className="chart-card">
+            <h6><i className="fas fa-chart-pie me-2" style={{color:'var(--secondary)'}}></i>Conservation Status Distribution</h6>
+            <canvas ref={pieRef} height="160"></canvas>
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Tables */}
+      <div className="row g-3">
+        <div className="col-md-6">
+          <div className="data-table">
+            <div className="data-table-header">
+              <h6><i className="fas fa-binoculars me-2" style={{color:'var(--secondary)'}}></i>Recent Sightings</h6>
+            </div>
+            <table className="table table-hover mb-0">
+              <thead><tr><th>Animal</th><th>Area</th><th>Date</th><th>Observer</th></tr></thead>
+              <tbody>
+                {stats.sightings.length === 0 && <tr><td colSpan="4" className="text-center text-muted py-3">No sightings yet</td></tr>}
+                {stats.sightings.map((r, i) => (
+                  <tr key={i}>
+                    <td>{r.animal_name}</td>
+                    <td>{r.area_name}</td>
+                    <td>{r.sighting_date ? new Date(r.sighting_date).toLocaleDateString() : '—'}</td>
+                    <td>{r.observed_by}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div className="col-md-6">
+          <div className="data-table">
+            <div className="data-table-header">
+              <h6><i className="fas fa-exclamation-triangle me-2" style={{color:'#f77f00'}}></i>Recent Threats</h6>
+            </div>
+            <table className="table table-hover mb-0">
+              <thead><tr><th>Type</th><th>Severity</th><th>Location</th><th>Status</th></tr></thead>
+              <tbody>
+                {stats.threats.length === 0 && <tr><td colSpan="4" className="text-center text-muted py-3">No threats recorded</td></tr>}
+                {stats.threats.map((r, i) => (
+                  <tr key={i}>
+                    <td>{r.threat_type}</td>
+                    <td><SeverityBadge severity={r.severity} /></td>
+                    <td>{r.location}</td>
+                    <td><StatusBadge status={r.status} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SPECIES PAGE
+// ═══════════════════════════════════════════════════════════════════════════════
+const EMPTY_SPECIES = { common_name:'', scientific_name:'', category:'', conservation_status:'Least Concern', description:'' };
+function SpeciesPage({ addToast }) {
+  const [data, setData]       = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError]     = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [editItem, setEditItem]   = useState(null);
+  const [form, setForm]           = useState(EMPTY_SPECIES);
+  const [submitting, setSubmitting] = useState(false);
+
+  const load = () => {
+    setLoading(true);
+    apiFetch(`${API}/species`)
+      .then(d => { setData(d); setLoading(false); })
+      .catch(e => { setError(e.message); setLoading(false); });
+  };
+  useEffect(load, []);
+
+  const openAdd  = () => { setForm(EMPTY_SPECIES); setEditItem(null); setShowModal(true); };
+  const openEdit = r  => { setForm({...r}); setEditItem(r); setShowModal(true); };
+  const closeModal = () => setShowModal(false);
+
+  const handleSubmit = async e => {
+    e.preventDefault(); setSubmitting(true);
+    try {
+      if (editItem) {
+        await apiFetch(`${API}/species/${editItem.species_id}`, { method:'PUT', body: JSON.stringify(form) });
+        addToast('Species updated successfully!');
+      } else {
+        await apiFetch(`${API}/species`, { method:'POST', body: JSON.stringify(form) });
+        addToast('Species added successfully!');
+      }
+      closeModal(); load();
+    } catch(err) { addToast(err.message, 'error'); }
+    setSubmitting(false);
+  };
+
+  const handleDelete = async r => {
+    if (!window.confirm(`Delete "${r.common_name}"?`)) return;
+    try {
+      await apiFetch(`${API}/species/${r.species_id}`, { method:'DELETE' });
+      addToast('Species deleted.'); load();
+    } catch(err) { addToast(err.message, 'error'); }
+  };
+
+  const cats = ['Mammal','Bird','Reptile','Amphibian','Fish','Insect','Plant','Other'];
+  const statuses = ['Least Concern','Near Threatened','Vulnerable','Endangered','Critically Endangered','Extinct'];
+
+  return (
+    <>
+      <PageHeader title="Species" subtitle="Manage wildlife species records" icon="fa-dragon" />
+      <div className="page-content">
+        <div className="data-table">
+          <div className="data-table-header">
+            <h6>All Species ({data.length})</h6>
+            <button className="btn-wildlife" onClick={openAdd}><i className="fas fa-plus me-2"></i>Add Species</button>
+          </div>
+          {loading ? <Spinner /> : error ? <ErrorAlert msg={error} /> : (
+            <table className="table table-hover mb-0">
+              <thead><tr><th>#</th><th>Common Name</th><th>Scientific Name</th><th>Category</th><th>Conservation Status</th><th>Animals</th><th>Actions</th></tr></thead>
+              <tbody>
+                {data.length === 0 && <tr><td colSpan="7" className="text-center text-muted py-4">No species found</td></tr>}
+                {data.map((r, i) => (
+                  <tr key={r.species_id}>
+                    <td className="text-muted">{i+1}</td>
+                    <td style={{fontWeight:600}}>{r.common_name}</td>
+                    <td><em style={{color:'#555'}}>{r.scientific_name}</em></td>
+                    <td>{r.category}</td>
+                    <td><ConservationBadge status={r.conservation_status} /></td>
+                    <td><span className="fw-bold">{r.animal_count || 0}</span></td>
+                    <td><ActionBtns onEdit={() => openEdit(r)} onDelete={() => handleDelete(r)} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+
+      <ModalForm show={showModal} title={editItem ? 'Edit Species' : 'Add New Species'} onClose={closeModal} onSubmit={handleSubmit} submitting={submitting}>
+        <FField label="Common Name *" col={6}><input className="form-control" required value={form.common_name} onChange={e => setForm({...form, common_name: e.target.value})} /></FField>
+        <FField label="Scientific Name *" col={6}><input className="form-control" required value={form.scientific_name} onChange={e => setForm({...form, scientific_name: e.target.value})} /></FField>
+        <FField label="Category" col={6}>
+          <select className="form-select" value={form.category} onChange={e => setForm({...form, category: e.target.value})}>
+            <option value="">Select category</option>
+            {cats.map(c => <option key={c}>{c}</option>)}
+          </select>
+        </FField>
+        <FField label="Conservation Status" col={6}>
+          <select className="form-select" value={form.conservation_status} onChange={e => setForm({...form, conservation_status: e.target.value})}>
+            {statuses.map(s => <option key={s}>{s}</option>)}
+          </select>
+        </FField>
+        <FField label="Description" col={12}><textarea className="form-control" rows={3} value={form.description || ''} onChange={e => setForm({...form, description: e.target.value})}></textarea></FField>
+      </ModalForm>
+    </>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ANIMALS PAGE
+// ═══════════════════════════════════════════════════════════════════════════════
+const EMPTY_ANIMAL = { animal_name:'', species_id:'', age:'', gender:'Male', health_status:'Healthy', area_id:'', tag_number:'', notes:'' };
+function AnimalsPage({ addToast }) {
+  const [data, setData]       = useState([]);
+  const [species, setSpecies] = useState([]);
+  const [areas, setAreas]     = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError]     = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [editItem, setEditItem]   = useState(null);
+  const [form, setForm]           = useState(EMPTY_ANIMAL);
+  const [submitting, setSubmitting] = useState(false);
+  const [search, setSearch]   = useState('');
+
+  const load = () => {
+    setLoading(true);
+    Promise.all([apiFetch(`${API}/animals`), apiFetch(`${API}/species`), apiFetch(`${API}/areas`)])
+      .then(([a, sp, ar]) => { setData(a); setSpecies(sp); setAreas(ar); setLoading(false); })
+      .catch(e => { setError(e.message); setLoading(false); });
+  };
+  useEffect(load, []);
+
+  const filtered = data.filter(r =>
+    (r.animal_name || '').toLowerCase().includes(search.toLowerCase()) ||
+    (r.tag_number  || '').toLowerCase().includes(search.toLowerCase())
+  );
+
+  const openAdd  = () => { setForm(EMPTY_ANIMAL); setEditItem(null); setShowModal(true); };
+  const openEdit = r  => { setForm({...r, species_id: r.species_id||'', area_id: r.area_id||''}); setEditItem(r); setShowModal(true); };
+  const closeModal = () => setShowModal(false);
+
+  const handleSubmit = async e => {
+    e.preventDefault(); setSubmitting(true);
+    try {
+      if (editItem) {
+        await apiFetch(`${API}/animals/${editItem.animal_id}`, { method:'PUT', body: JSON.stringify(form) });
+        addToast('Animal updated!');
+      } else {
+        await apiFetch(`${API}/animals`, { method:'POST', body: JSON.stringify(form) });
+        addToast('Animal added!');
+      }
+      closeModal(); load();
+    } catch(err) { addToast(err.message, 'error'); }
+    setSubmitting(false);
+  };
+
+  const handleDelete = async r => {
+    if (!window.confirm(`Delete "${r.animal_name}"?`)) return;
+    try {
+      await apiFetch(`${API}/animals/${r.animal_id}`, { method:'DELETE' });
+      addToast('Animal deleted.'); load();
+    } catch(err) { addToast(err.message, 'error'); }
+  };
+
+  return (
+    <>
+      <PageHeader title="Animals" subtitle="Manage individual animal records" icon="fa-paw" />
+      <div className="page-content">
+        <div className="data-table">
+          <div className="data-table-header">
+            <h6>All Animals ({filtered.length})</h6>
+            <div className="d-flex gap-2 align-items-center">
+              <div className="search-box">
+                <i className="fas fa-search"></i>
+                <input className="form-control form-control-sm" placeholder="Search name or tag…" value={search} onChange={e => setSearch(e.target.value)} />
+              </div>
+              <button className="btn-wildlife" onClick={openAdd}><i className="fas fa-plus me-2"></i>Add Animal</button>
+            </div>
+          </div>
+          {loading ? <Spinner /> : error ? <ErrorAlert msg={error} /> : (
+            <table className="table table-hover mb-0">
+              <thead><tr><th>#</th><th>Name</th><th>Species</th><th>Area</th><th>Age</th><th>Gender</th><th>Health</th><th>Tag #</th><th>Actions</th></tr></thead>
+              <tbody>
+                {filtered.length === 0 && <tr><td colSpan="9" className="text-center text-muted py-4">No animals found</td></tr>}
+                {filtered.map((r, i) => (
+                  <tr key={r.animal_id}>
+                    <td className="text-muted">{i+1}</td>
+                    <td style={{fontWeight:600}}>{r.animal_name}</td>
+                    <td>{r.species_name}</td>
+                    <td>{r.area_name || '—'}</td>
+                    <td>{r.age != null ? r.age + ' yr' : '—'}</td>
+                    <td>{r.gender}</td>
+                    <td><HealthBadge status={r.health_status} /></td>
+                    <td><code style={{fontSize:11}}>{r.tag_number}</code></td>
+                    <td><ActionBtns onEdit={() => openEdit(r)} onDelete={() => handleDelete(r)} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+
+      <ModalForm show={showModal} title={editItem ? 'Edit Animal' : 'Add New Animal'} onClose={closeModal} onSubmit={handleSubmit} submitting={submitting}>
+        <FField label="Animal Name *" col={6}><input className="form-control" required value={form.animal_name} onChange={e => setForm({...form, animal_name: e.target.value})} /></FField>
+        <FField label="Tag Number" col={6}><input className="form-control" value={form.tag_number||''} onChange={e => setForm({...form, tag_number: e.target.value})} /></FField>
+        <FField label="Species *" col={6}>
+          <select className="form-select" required value={form.species_id} onChange={e => setForm({...form, species_id: e.target.value})}>
+            <option value="">Select species…</option>
+            {species.map(s => <option key={s.species_id} value={s.species_id}>{s.common_name}</option>)}
+          </select>
+        </FField>
+        <FField label="Protected Area" col={6}>
+          <select className="form-select" value={form.area_id||''} onChange={e => setForm({...form, area_id: e.target.value})}>
+            <option value="">No area assigned</option>
+            {areas.map(a => <option key={a.area_id} value={a.area_id}>{a.area_name}</option>)}
+          </select>
+        </FField>
+        <FField label="Age (years)" col={4}><input type="number" className="form-control" value={form.age||''} onChange={e => setForm({...form, age: e.target.value})} /></FField>
+        <FField label="Gender" col={4}>
+          <select className="form-select" value={form.gender||'Male'} onChange={e => setForm({...form, gender: e.target.value})}>
+            {['Male','Female','Unknown'].map(g => <option key={g}>{g}</option>)}
+          </select>
+        </FField>
+        <FField label="Health Status" col={4}>
+          <select className="form-select" value={form.health_status||'Healthy'} onChange={e => setForm({...form, health_status: e.target.value})}>
+            {['Healthy','Sick','Injured','Recovering'].map(h => <option key={h}>{h}</option>)}
+          </select>
+        </FField>
+        <FField label="Notes" col={12}><textarea className="form-control" rows={2} value={form.notes||''} onChange={e => setForm({...form, notes: e.target.value})}></textarea></FField>
+      </ModalForm>
+    </>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// AREAS (PROTECTED AREAS)
+// ═══════════════════════════════════════════════════════════════════════════════
+const EMPTY_AREA = { area_name:'', location:'', area_size_km2:'', area_type:'National Park', description:'', established_year:'' };
+function AreasPage({ addToast }) {
+  const [data, setData]       = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError]     = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [editItem, setEditItem]   = useState(null);
+  const [form, setForm]           = useState(EMPTY_AREA);
+  const [submitting, setSubmitting] = useState(false);
+
+  const load = () => {
+    setLoading(true);
+    apiFetch(`${API}/areas`)
+      .then(d => { setData(d); setLoading(false); })
+      .catch(e => { setError(e.message); setLoading(false); });
+  };
+  useEffect(load, []);
+
+  const openAdd  = () => { setForm(EMPTY_AREA); setEditItem(null); setShowModal(true); };
+  const openEdit = r  => { setForm({...r}); setEditItem(r); setShowModal(true); };
+  const closeModal = () => setShowModal(false);
+
+  const handleSubmit = async e => {
+    e.preventDefault(); setSubmitting(true);
+    try {
+      if (editItem) {
+        await apiFetch(`${API}/areas/${editItem.area_id}`, { method:'PUT', body: JSON.stringify(form) });
+        addToast('Area updated!');
+      } else {
+        await apiFetch(`${API}/areas`, { method:'POST', body: JSON.stringify(form) });
+        addToast('Area added!');
+      }
+      closeModal(); load();
+    } catch(err) { addToast(err.message, 'error'); }
+    setSubmitting(false);
+  };
+
+  const handleDelete = async r => {
+    if (!window.confirm(`Delete area "${r.area_name}"?`)) return;
+    try {
+      await apiFetch(`${API}/areas/${r.area_id}`, { method:'DELETE' });
+      addToast('Area deleted.'); load();
+    } catch(err) { addToast(err.message, 'error'); }
+  };
+
+  const areaTypes = ['National Park','Wildlife Sanctuary','Reserve Forest','Marine Protected Area','Biosphere Reserve','Tiger Reserve','Other'];
+
+  return (
+    <>
+      <PageHeader title="Protected Areas" subtitle="Manage protected wildlife areas" icon="fa-tree" />
+      <div className="page-content">
+        <div className="data-table">
+          <div className="data-table-header">
+            <h6>All Protected Areas ({data.length})</h6>
+            <button className="btn-wildlife" onClick={openAdd}><i className="fas fa-plus me-2"></i>Add Area</button>
+          </div>
+          {loading ? <Spinner /> : error ? <ErrorAlert msg={error} /> : (
+            <table className="table table-hover mb-0">
+              <thead><tr><th>#</th><th>Area Name</th><th>Location</th><th>Type</th><th>Size (km²)</th><th>Est. Year</th><th>Animals</th><th>Actions</th></tr></thead>
+              <tbody>
+                {data.length === 0 && <tr><td colSpan="8" className="text-center text-muted py-4">No protected areas found</td></tr>}
+                {data.map((r, i) => (
+                  <tr key={r.area_id}>
+                    <td className="text-muted">{i+1}</td>
+                    <td style={{fontWeight:600}}>{r.area_name}</td>
+                    <td>{r.location}</td>
+                    <td><span className="badge bg-secondary">{r.area_type}</span></td>
+                    <td>{r.area_size_km2 ? parseFloat(r.area_size_km2).toLocaleString() : '—'}</td>
+                    <td>{r.established_year || '—'}</td>
+                    <td>{r.animal_count || 0}</td>
+                    <td><ActionBtns onEdit={() => openEdit(r)} onDelete={() => handleDelete(r)} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+
+      <ModalForm show={showModal} title={editItem ? 'Edit Protected Area' : 'Add Protected Area'} onClose={closeModal} onSubmit={handleSubmit} submitting={submitting}>
+        <FField label="Area Name *" col={6}><input className="form-control" required value={form.area_name} onChange={e => setForm({...form, area_name: e.target.value})} /></FField>
+        <FField label="Location *" col={6}><input className="form-control" required value={form.location} onChange={e => setForm({...form, location: e.target.value})} /></FField>
+        <FField label="Area Type" col={6}>
+          <select className="form-select" value={form.area_type} onChange={e => setForm({...form, area_type: e.target.value})}>
+            {areaTypes.map(t => <option key={t}>{t}</option>)}
+          </select>
+        </FField>
+        <FField label="Size (km²)" col={3}><input type="number" step="0.01" className="form-control" value={form.area_size_km2||''} onChange={e => setForm({...form, area_size_km2: e.target.value})} /></FField>
+        <FField label="Established Year" col={3}><input type="number" className="form-control" value={form.established_year||''} onChange={e => setForm({...form, established_year: e.target.value})} /></FField>
+        <FField label="Description" col={12}><textarea className="form-control" rows={2} value={form.description||''} onChange={e => setForm({...form, description: e.target.value})}></textarea></FField>
+      </ModalForm>
+    </>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RESEARCHERS PAGE
+// ═══════════════════════════════════════════════════════════════════════════════
+const EMPTY_RESEARCHER = { first_name:'', last_name:'', email:'', phone:'', specialization:'', institution:'', joining_date:'' };
+function ResearchersPage({ addToast }) {
+  const [data, setData]       = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError]     = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [editItem, setEditItem]   = useState(null);
+  const [form, setForm]           = useState(EMPTY_RESEARCHER);
+  const [submitting, setSubmitting] = useState(false);
+
+  const load = () => {
+    setLoading(true);
+    apiFetch(`${API}/researchers`)
+      .then(d => { setData(d); setLoading(false); })
+      .catch(e => { setError(e.message); setLoading(false); });
+  };
+  useEffect(load, []);
+
+  const openAdd  = () => { setForm(EMPTY_RESEARCHER); setEditItem(null); setShowModal(true); };
+  const openEdit = r  => { setForm({...r}); setEditItem(r); setShowModal(true); };
+  const closeModal = () => setShowModal(false);
+
+  const handleSubmit = async e => {
+    e.preventDefault(); setSubmitting(true);
+    try {
+      if (editItem) {
+        await apiFetch(`${API}/researchers/${editItem.researcher_id}`, { method:'PUT', body: JSON.stringify(form) });
+        addToast('Researcher updated!');
+      } else {
+        await apiFetch(`${API}/researchers`, { method:'POST', body: JSON.stringify(form) });
+        addToast('Researcher added!');
+      }
+      closeModal(); load();
+    } catch(err) { addToast(err.message, 'error'); }
+    setSubmitting(false);
+  };
+
+  const handleDelete = async r => {
+    if (!window.confirm(`Delete researcher "${r.first_name} ${r.last_name}"?`)) return;
+    try {
+      await apiFetch(`${API}/researchers/${r.researcher_id}`, { method:'DELETE' });
+      addToast('Researcher deleted.'); load();
+    } catch(err) { addToast(err.message, 'error'); }
+  };
+
+  return (
+    <>
+      <PageHeader title="Researchers" subtitle="Manage wildlife researchers" icon="fa-microscope" />
+      <div className="page-content">
+        <div className="data-table">
+          <div className="data-table-header">
+            <h6>All Researchers ({data.length})</h6>
+            <button className="btn-wildlife" onClick={openAdd}><i className="fas fa-plus me-2"></i>Add Researcher</button>
+          </div>
+          {loading ? <Spinner /> : error ? <ErrorAlert msg={error} /> : (
+            <table className="table table-hover mb-0">
+              <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Specialization</th><th>Institution</th><th>Research</th><th>Actions</th></tr></thead>
+              <tbody>
+                {data.length === 0 && <tr><td colSpan="7" className="text-center text-muted py-4">No researchers found</td></tr>}
+                {data.map((r, i) => (
+                  <tr key={r.researcher_id}>
+                    <td className="text-muted">{i+1}</td>
+                    <td style={{fontWeight:600}}>{r.first_name} {r.last_name}</td>
+                    <td><a href={`mailto:${r.email}`}>{r.email}</a></td>
+                    <td>{r.specialization}</td>
+                    <td>{r.institution}</td>
+                    <td>{r.research_count || 0}</td>
+                    <td><ActionBtns onEdit={() => openEdit(r)} onDelete={() => handleDelete(r)} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+
+      <ModalForm show={showModal} title={editItem ? 'Edit Researcher' : 'Add Researcher'} onClose={closeModal} onSubmit={handleSubmit} submitting={submitting}>
+        <FField label="First Name *" col={6}><input className="form-control" required value={form.first_name} onChange={e => setForm({...form, first_name: e.target.value})} /></FField>
+        <FField label="Last Name *" col={6}><input className="form-control" required value={form.last_name} onChange={e => setForm({...form, last_name: e.target.value})} /></FField>
+        <FField label="Email" col={6}><input type="email" className="form-control" value={form.email||''} onChange={e => setForm({...form, email: e.target.value})} /></FField>
+        <FField label="Phone" col={6}><input className="form-control" value={form.phone||''} onChange={e => setForm({...form, phone: e.target.value})} /></FField>
+        <FField label="Specialization" col={6}><input className="form-control" value={form.specialization||''} onChange={e => setForm({...form, specialization: e.target.value})} /></FField>
+        <FField label="Institution" col={6}><input className="form-control" value={form.institution||''} onChange={e => setForm({...form, institution: e.target.value})} /></FField>
+        <FField label="Joining Date" col={6}><input type="date" className="form-control" value={form.joining_date ? form.joining_date.split('T')[0] : ''} onChange={e => setForm({...form, joining_date: e.target.value})} /></FField>
+      </ModalForm>
+    </>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RESEARCH PAGE
+// ═══════════════════════════════════════════════════════════════════════════════
+const EMPTY_RESEARCH = { title:'', description:'', researcher_id:'', start_date:'', end_date:'', status:'Ongoing' };
+function ResearchPage({ addToast }) {
+  const [data, setData]           = useState([]);
+  const [researchers, setResearchers] = useState([]);
+  const [loading, setLoading]     = useState(true);
+  const [error, setError]         = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [editItem, setEditItem]   = useState(null);
+  const [form, setForm]           = useState(EMPTY_RESEARCH);
+  const [submitting, setSubmitting] = useState(false);
+
+  const load = () => {
+    setLoading(true);
+    Promise.all([apiFetch(`${API}/research`), apiFetch(`${API}/researchers`)])
+      .then(([d, r]) => { setData(d); setResearchers(r); setLoading(false); })
+      .catch(e => { setError(e.message); setLoading(false); });
+  };
+  useEffect(load, []);
+
+  const openAdd  = () => { setForm(EMPTY_RESEARCH); setEditItem(null); setShowModal(true); };
+  const openEdit = r  => { setForm({...r, researcher_id: r.researcher_id||'', start_date: r.start_date ? r.start_date.split('T')[0] : '', end_date: r.end_date ? r.end_date.split('T')[0] : ''}); setEditItem(r); setShowModal(true); };
+  const closeModal = () => setShowModal(false);
+
+  const handleSubmit = async e => {
+    e.preventDefault(); setSubmitting(true);
+    try {
+      if (editItem) {
+        await apiFetch(`${API}/research/${editItem.research_id}`, { method:'PUT', body: JSON.stringify(form) });
+        addToast('Research updated!');
+      } else {
+        await apiFetch(`${API}/research`, { method:'POST', body: JSON.stringify(form) });
+        addToast('Research added!');
+      }
+      closeModal(); load();
+    } catch(err) { addToast(err.message, 'error'); }
+    setSubmitting(false);
+  };
+
+  const handleDelete = async r => {
+    if (!window.confirm(`Delete research "${r.title}"?`)) return;
+    try {
+      await apiFetch(`${API}/research/${r.research_id}`, { method:'DELETE' });
+      addToast('Research deleted.'); load();
+    } catch(err) { addToast(err.message, 'error'); }
+  };
+
+  return (
+    <>
+      <PageHeader title="Research" subtitle="Wildlife research projects and studies" icon="fa-clipboard-list" />
+      <div className="page-content">
+        <div className="data-table">
+          <div className="data-table-header">
+            <h6>All Research Records ({data.length})</h6>
+            <button className="btn-wildlife" onClick={openAdd}><i className="fas fa-plus me-2"></i>Add Research</button>
+          </div>
+          {loading ? <Spinner /> : error ? <ErrorAlert msg={error} /> : (
+            <table className="table table-hover mb-0">
+              <thead><tr><th>#</th><th>Title</th><th>Researcher</th><th>Start Date</th><th>End Date</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                {data.length === 0 && <tr><td colSpan="7" className="text-center text-muted py-4">No research records found</td></tr>}
+                {data.map((r, i) => (
+                  <tr key={r.research_id}>
+                    <td className="text-muted">{i+1}</td>
+                    <td style={{fontWeight:600, maxWidth:200}}>{r.title}</td>
+                    <td>{r.researcher_name}</td>
+                    <td>{r.start_date ? new Date(r.start_date).toLocaleDateString() : '—'}</td>
+                    <td>{r.end_date   ? new Date(r.end_date).toLocaleDateString()   : '—'}</td>
+                    <td><StatusBadge status={r.status} /></td>
+                    <td><ActionBtns onEdit={() => openEdit(r)} onDelete={() => handleDelete(r)} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+
+      <ModalForm show={showModal} title={editItem ? 'Edit Research' : 'Add Research'} onClose={closeModal} onSubmit={handleSubmit} submitting={submitting}>
+        <FField label="Title *" col={12}><input className="form-control" required value={form.title} onChange={e => setForm({...form, title: e.target.value})} /></FField>
+        <FField label="Researcher" col={6}>
+          <select className="form-select" value={form.researcher_id||''} onChange={e => setForm({...form, researcher_id: e.target.value})}>
+            <option value="">Select researcher…</option>
+            {researchers.map(r => <option key={r.researcher_id} value={r.researcher_id}>{r.first_name} {r.last_name}</option>)}
+          </select>
+        </FField>
+        <FField label="Status" col={6}>
+          <select className="form-select" value={form.status} onChange={e => setForm({...form, status: e.target.value})}>
+            {['Ongoing','Completed','Pending'].map(s => <option key={s}>{s}</option>)}
+          </select>
+        </FField>
+        <FField label="Start Date" col={6}><input type="date" className="form-control" value={form.start_date||''} onChange={e => setForm({...form, start_date: e.target.value})} /></FField>
+        <FField label="End Date" col={6}><input type="date" className="form-control" value={form.end_date||''} onChange={e => setForm({...form, end_date: e.target.value})} /></FField>
+        <FField label="Description" col={12}><textarea className="form-control" rows={3} value={form.description||''} onChange={e => setForm({...form, description: e.target.value})}></textarea></FField>
+      </ModalForm>
+    </>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SIGHTINGS PAGE
+// ═══════════════════════════════════════════════════════════════════════════════
+const EMPTY_SIGHTING = { animal_id:'', area_id:'', sighting_date:'', sighting_time:'', location_description:'', observed_by:'', notes:'' };
+function SightingsPage({ addToast }) {
+  const [data, setData]     = useState([]);
+  const [animals, setAnimals] = useState([]);
+  const [areas, setAreas]   = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError]   = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [editItem, setEditItem]   = useState(null);
+  const [form, setForm]     = useState(EMPTY_SIGHTING);
+  const [submitting, setSubmitting] = useState(false);
+
+  const load = () => {
+    setLoading(true);
+    Promise.all([apiFetch(`${API}/sightings`), apiFetch(`${API}/animals`), apiFetch(`${API}/areas`)])
+      .then(([d, a, ar]) => { setData(d); setAnimals(a); setAreas(ar); setLoading(false); })
+      .catch(e => { setError(e.message); setLoading(false); });
+  };
+  useEffect(load, []);
+
+  const openAdd  = () => { setForm(EMPTY_SIGHTING); setEditItem(null); setShowModal(true); };
+  const openEdit = r  => { setForm({...r, sighting_date: r.sighting_date ? r.sighting_date.split('T')[0] : '', sighting_time: r.sighting_time ? r.sighting_time.substring(0,5) : ''}); setEditItem(r); setShowModal(true); };
+  const closeModal = () => setShowModal(false);
+
+  const handleSubmit = async e => {
+    e.preventDefault(); setSubmitting(true);
+    try {
+      if (editItem) {
+        await apiFetch(`${API}/sightings/${editItem.sighting_id}`, { method:'PUT', body: JSON.stringify(form) });
+        addToast('Sighting updated!');
+      } else {
+        await apiFetch(`${API}/sightings`, { method:'POST', body: JSON.stringify(form) });
+        addToast('Sighting recorded!');
+      }
+      closeModal(); load();
+    } catch(err) { addToast(err.message, 'error'); }
+    setSubmitting(false);
+  };
+
+  const handleDelete = async r => {
+    if (!window.confirm('Delete this sighting record?')) return;
+    try {
+      await apiFetch(`${API}/sightings/${r.sighting_id}`, { method:'DELETE' });
+      addToast('Sighting deleted.'); load();
+    } catch(err) { addToast(err.message, 'error'); }
+  };
+
+  return (
+    <>
+      <PageHeader title="Sightings" subtitle="Wildlife sighting observations" icon="fa-binoculars" />
+      <div className="page-content">
+        <div className="data-table">
+          <div className="data-table-header">
+            <h6>All Sightings ({data.length})</h6>
+            <button className="btn-wildlife" onClick={openAdd}><i className="fas fa-plus me-2"></i>Record Sighting</button>
+          </div>
+          {loading ? <Spinner /> : error ? <ErrorAlert msg={error} /> : (
+            <table className="table table-hover mb-0">
+              <thead><tr><th>#</th><th>Animal</th><th>Species</th><th>Area</th><th>Date</th><th>Time</th><th>Observer</th><th>Actions</th></tr></thead>
+              <tbody>
+                {data.length === 0 && <tr><td colSpan="8" className="text-center text-muted py-4">No sightings recorded</td></tr>}
+                {data.map((r, i) => (
+                  <tr key={r.sighting_id}>
+                    <td className="text-muted">{i+1}</td>
+                    <td style={{fontWeight:600}}>{r.animal_name}</td>
+                    <td><em>{r.species_name}</em></td>
+                    <td>{r.area_name}</td>
+                    <td>{r.sighting_date ? new Date(r.sighting_date).toLocaleDateString() : '—'}</td>
+                    <td>{r.sighting_time ? r.sighting_time.substring(0,5) : '—'}</td>
+                    <td>{r.observed_by}</td>
+                    <td><ActionBtns onEdit={() => openEdit(r)} onDelete={() => handleDelete(r)} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+
+      <ModalForm show={showModal} title={editItem ? 'Edit Sighting' : 'Record New Sighting'} onClose={closeModal} onSubmit={handleSubmit} submitting={submitting}>
+        <FField label="Animal *" col={6}>
+          <select className="form-select" required value={form.animal_id} onChange={e => setForm({...form, animal_id: e.target.value})}>
+            <option value="">Select animal…</option>
+            {animals.map(a => <option key={a.animal_id} value={a.animal_id}>{a.animal_name}</option>)}
+          </select>
+        </FField>
+        <FField label="Area *" col={6}>
+          <select className="form-select" required value={form.area_id} onChange={e => setForm({...form, area_id: e.target.value})}>
+            <option value="">Select area…</option>
+            {areas.map(a => <option key={a.area_id} value={a.area_id}>{a.area_name}</option>)}
+          </select>
+        </FField>
+        <FField label="Date *" col={6}><input type="date" className="form-control" required value={form.sighting_date||''} onChange={e => setForm({...form, sighting_date: e.target.value})} /></FField>
+        <FField label="Time" col={6}><input type="time" className="form-control" value={form.sighting_time||''} onChange={e => setForm({...form, sighting_time: e.target.value})} /></FField>
+        <FField label="Observed By" col={6}><input className="form-control" value={form.observed_by||''} onChange={e => setForm({...form, observed_by: e.target.value})} /></FField>
+        <FField label="Location Description" col={6}><input className="form-control" value={form.location_description||''} onChange={e => setForm({...form, location_description: e.target.value})} /></FField>
+        <FField label="Notes" col={12}><textarea className="form-control" rows={2} value={form.notes||''} onChange={e => setForm({...form, notes: e.target.value})}></textarea></FField>
+      </ModalForm>
+    </>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// THREATS PAGE
+// ═══════════════════════════════════════════════════════════════════════════════
+const EMPTY_THREAT = { threat_type:'Poaching', severity:'Medium', location:'', threat_date:'', description:'', reported_by:'', status:'Active' };
+function ThreatsPage({ addToast }) {
+  const [data, setData]       = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError]     = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [editItem, setEditItem]   = useState(null);
+  const [form, setForm]           = useState(EMPTY_THREAT);
+  const [submitting, setSubmitting] = useState(false);
+
+  const load = () => {
+    setLoading(true);
+    apiFetch(`${API}/threats`)
+      .then(d => { setData(d); setLoading(false); })
+      .catch(e => { setError(e.message); setLoading(false); });
+  };
+  useEffect(load, []);
+
+  const openAdd  = () => { setForm(EMPTY_THREAT); setEditItem(null); setShowModal(true); };
+  const openEdit = r  => { setForm({...r, threat_date: r.threat_date ? r.threat_date.split('T')[0] : ''}); setEditItem(r); setShowModal(true); };
+  const closeModal = () => setShowModal(false);
+
+  const handleSubmit = async e => {
+    e.preventDefault(); setSubmitting(true);
+    try {
+      if (editItem) {
+        await apiFetch(`${API}/threats/${editItem.threat_id}`, { method:'PUT', body: JSON.stringify(form) });
+        addToast('Threat updated!');
+      } else {
+        await apiFetch(`${API}/threats`, { method:'POST', body: JSON.stringify(form) });
+        addToast('Threat reported!');
+      }
+      closeModal(); load();
+    } catch(err) { addToast(err.message, 'error'); }
+    setSubmitting(false);
+  };
+
+  const handleDelete = async r => {
+    if (!window.confirm('Delete this threat record?')) return;
+    try {
+      await apiFetch(`${API}/threats/${r.threat_id}`, { method:'DELETE' });
+      addToast('Threat deleted.'); load();
+    } catch(err) { addToast(err.message, 'error'); }
+  };
+
+  const threatTypes = ['Poaching','Habitat Loss','Pollution','Climate Change','Invasive Species','Disease','Human-Wildlife Conflict','Deforestation','Other'];
+
+  return (
+    <>
+      <PageHeader title="Threats" subtitle="Wildlife threats and hazards" icon="fa-exclamation-triangle" />
+      <div className="page-content">
+        <div className="data-table">
+          <div className="data-table-header">
+            <h6>All Threats ({data.length})</h6>
+            <button className="btn-wildlife" onClick={openAdd}><i className="fas fa-plus me-2"></i>Report Threat</button>
+          </div>
+          {loading ? <Spinner /> : error ? <ErrorAlert msg={error} /> : (
+            <table className="table table-hover mb-0">
+              <thead><tr><th>#</th><th>Threat Type</th><th>Severity</th><th>Location</th><th>Date</th><th>Reported By</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                {data.length === 0 && <tr><td colSpan="8" className="text-center text-muted py-4">No threats recorded</td></tr>}
+                {data.map((r, i) => (
+                  <tr key={r.threat_id}>
+                    <td className="text-muted">{i+1}</td>
+                    <td style={{fontWeight:600}}>{r.threat_type}</td>
+                    <td><SeverityBadge severity={r.severity} /></td>
+                    <td>{r.location}</td>
+                    <td>{r.threat_date ? new Date(r.threat_date).toLocaleDateString() : '—'}</td>
+                    <td>{r.reported_by}</td>
+                    <td><StatusBadge status={r.status} /></td>
+                    <td><ActionBtns onEdit={() => openEdit(r)} onDelete={() => handleDelete(r)} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+
+      <ModalForm show={showModal} title={editItem ? 'Edit Threat' : 'Report New Threat'} onClose={closeModal} onSubmit={handleSubmit} submitting={submitting}>
+        <FField label="Threat Type" col={6}>
+          <select className="form-select" value={form.threat_type} onChange={e => setForm({...form, threat_type: e.target.value})}>
+            {threatTypes.map(t => <option key={t}>{t}</option>)}
+          </select>
+        </FField>
+        <FField label="Severity" col={3}>
+          <select className="form-select" value={form.severity} onChange={e => setForm({...form, severity: e.target.value})}>
+            {['Critical','High','Medium','Low'].map(s => <option key={s}>{s}</option>)}
+          </select>
+        </FField>
+        <FField label="Status" col={3}>
+          <select className="form-select" value={form.status} onChange={e => setForm({...form, status: e.target.value})}>
+            {['Active','Resolved','Pending'].map(s => <option key={s}>{s}</option>)}
+          </select>
+        </FField>
+        <FField label="Location" col={6}><input className="form-control" value={form.location||''} onChange={e => setForm({...form, location: e.target.value})} /></FField>
+        <FField label="Threat Date" col={6}><input type="date" className="form-control" value={form.threat_date||''} onChange={e => setForm({...form, threat_date: e.target.value})} /></FField>
+        <FField label="Reported By" col={6}><input className="form-control" value={form.reported_by||''} onChange={e => setForm({...form, reported_by: e.target.value})} /></FField>
+        <FField label="Description" col={12}><textarea className="form-control" rows={2} value={form.description||''} onChange={e => setForm({...form, description: e.target.value})}></textarea></FField>
+      </ModalForm>
+    </>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INCIDENTS PAGE
+// ═══════════════════════════════════════════════════════════════════════════════
+const EMPTY_INCIDENT = { incident_title:'', animal_id:'', threat_id:'', incident_date:'', description:'', location:'', severity:'Medium', status:'Active' };
+function IncidentsPage({ addToast }) {
+  const [data, setData]     = useState([]);
+  const [animals, setAnimals] = useState([]);
+  const [threats, setThreats] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError]   = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [editItem, setEditItem]   = useState(null);
+  const [form, setForm]     = useState(EMPTY_INCIDENT);
+  const [submitting, setSubmitting] = useState(false);
+
+  const load = () => {
+    setLoading(true);
+    Promise.all([apiFetch(`${API}/incidents`), apiFetch(`${API}/animals`), apiFetch(`${API}/threats`)])
+      .then(([d, a, t]) => { setData(d); setAnimals(a); setThreats(t); setLoading(false); })
+      .catch(e => { setError(e.message); setLoading(false); });
+  };
+  useEffect(load, []);
+
+  const openAdd  = () => { setForm(EMPTY_INCIDENT); setEditItem(null); setShowModal(true); };
+  const openEdit = r  => { setForm({...r, incident_date: r.incident_date ? r.incident_date.split('T')[0] : ''}); setEditItem(r); setShowModal(true); };
+  const closeModal = () => setShowModal(false);
+
+  const handleSubmit = async e => {
+    e.preventDefault(); setSubmitting(true);
+    try {
+      const payload = {...form, animal_id: form.animal_id || null, threat_id: form.threat_id || null};
+      if (editItem) {
+        await apiFetch(`${API}/incidents/${editItem.incident_id}`, { method:'PUT', body: JSON.stringify(payload) });
+        addToast('Incident updated!');
+      } else {
+        await apiFetch(`${API}/incidents`, { method:'POST', body: JSON.stringify(payload) });
+        addToast('Incident reported!');
+      }
+      closeModal(); load();
+    } catch(err) { addToast(err.message, 'error'); }
+    setSubmitting(false);
+  };
+
+  const handleDelete = async r => {
+    if (!window.confirm(`Delete incident "${r.incident_title}"?`)) return;
+    try {
+      await apiFetch(`${API}/incidents/${r.incident_id}`, { method:'DELETE' });
+      addToast('Incident deleted.'); load();
+    } catch(err) { addToast(err.message, 'error'); }
+  };
+
+  return (
+    <>
+      <PageHeader title="Incidents" subtitle="Wildlife incidents and emergencies" icon="fa-bell" />
+      <div className="page-content">
+        <div className="data-table">
+          <div className="data-table-header">
+            <h6>All Incidents ({data.length})</h6>
+            <button className="btn-wildlife" onClick={openAdd}><i className="fas fa-plus me-2"></i>Report Incident</button>
+          </div>
+          {loading ? <Spinner /> : error ? <ErrorAlert msg={error} /> : (
+            <table className="table table-hover mb-0">
+              <thead><tr><th>#</th><th>Title</th><th>Animal</th><th>Threat Type</th><th>Date</th><th>Severity</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                {data.length === 0 && <tr><td colSpan="8" className="text-center text-muted py-4">No incidents recorded</td></tr>}
+                {data.map((r, i) => (
+                  <tr key={r.incident_id}>
+                    <td className="text-muted">{i+1}</td>
+                    <td style={{fontWeight:600}}>{r.incident_title}</td>
+                    <td>{r.animal_name || <span className="text-muted">N/A</span>}</td>
+                    <td>{r.threat_type || <span className="text-muted">N/A</span>}</td>
+                    <td>{r.incident_date ? new Date(r.incident_date).toLocaleDateString() : '—'}</td>
+                    <td><SeverityBadge severity={r.severity} /></td>
+                    <td><StatusBadge status={r.status} /></td>
+                    <td><ActionBtns onEdit={() => openEdit(r)} onDelete={() => handleDelete(r)} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+
+      <ModalForm show={showModal} title={editItem ? 'Edit Incident' : 'Report Incident'} onClose={closeModal} onSubmit={handleSubmit} submitting={submitting}>
+        <FField label="Incident Title *" col={12}><input className="form-control" required value={form.incident_title} onChange={e => setForm({...form, incident_title: e.target.value})} /></FField>
+        <FField label="Animal (optional)" col={6}>
+          <select className="form-select" value={form.animal_id||''} onChange={e => setForm({...form, animal_id: e.target.value})}>
+            <option value="">No animal linked</option>
+            {animals.map(a => <option key={a.animal_id} value={a.animal_id}>{a.animal_name}</option>)}
+          </select>
+        </FField>
+        <FField label="Related Threat (optional)" col={6}>
+          <select className="form-select" value={form.threat_id||''} onChange={e => setForm({...form, threat_id: e.target.value})}>
+            <option value="">No threat linked</option>
+            {threats.map(t => <option key={t.threat_id} value={t.threat_id}>{t.threat_type} – {t.location}</option>)}
+          </select>
+        </FField>
+        <FField label="Date *" col={4}><input type="date" className="form-control" required value={form.incident_date||''} onChange={e => setForm({...form, incident_date: e.target.value})} /></FField>
+        <FField label="Severity" col={4}>
+          <select className="form-select" value={form.severity} onChange={e => setForm({...form, severity: e.target.value})}>
+            {['Critical','High','Medium','Low'].map(s => <option key={s}>{s}</option>)}
+          </select>
+        </FField>
+        <FField label="Status" col={4}>
+          <select className="form-select" value={form.status} onChange={e => setForm({...form, status: e.target.value})}>
+            {['Active','Resolved','Pending'].map(s => <option key={s}>{s}</option>)}
+          </select>
+        </FField>
+        <FField label="Location" col={6}><input className="form-control" value={form.location||''} onChange={e => setForm({...form, location: e.target.value})} /></FField>
+        <FField label="Description" col={12}><textarea className="form-control" rows={2} value={form.description||''} onChange={e => setForm({...form, description: e.target.value})}></textarea></FField>
+      </ModalForm>
+    </>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// VETERINARY PAGE
+// ═══════════════════════════════════════════════════════════════════════════════
+const EMPTY_VET = { animal_id:'', diagnosis:'', treatment:'', veterinarian_name:'', treatment_date:'', follow_up_date:'', medication:'', cost:'', notes:'' };
+function VeterinaryPage({ addToast }) {
+  const [data, setData]     = useState([]);
+  const [animals, setAnimals] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError]   = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [editItem, setEditItem]   = useState(null);
+  const [form, setForm]     = useState(EMPTY_VET);
+  const [submitting, setSubmitting] = useState(false);
+
+  const load = () => {
+    setLoading(true);
+    Promise.all([apiFetch(`${API}/veterinary`), apiFetch(`${API}/animals`)])
+      .then(([d, a]) => { setData(d); setAnimals(a); setLoading(false); })
+      .catch(e => { setError(e.message); setLoading(false); });
+  };
+  useEffect(load, []);
+
+  const openAdd  = () => { setForm(EMPTY_VET); setEditItem(null); setShowModal(true); };
+  const openEdit = r  => {
+    setForm({
+      ...r,
+      treatment_date:  r.treatment_date  ? r.treatment_date.split('T')[0]  : '',
+      follow_up_date:  r.follow_up_date  ? r.follow_up_date.split('T')[0]  : '',
+    });
+    setEditItem(r); setShowModal(true);
+  };
+  const closeModal = () => setShowModal(false);
+
+  const handleSubmit = async e => {
+    e.preventDefault(); setSubmitting(true);
+    try {
+      if (editItem) {
+        await apiFetch(`${API}/veterinary/${editItem.vet_id}`, { method:'PUT', body: JSON.stringify(form) });
+        addToast('Record updated!');
+      } else {
+        await apiFetch(`${API}/veterinary`, { method:'POST', body: JSON.stringify(form) });
+        addToast('Vet record added!');
+      }
+      closeModal(); load();
+    } catch(err) { addToast(err.message, 'error'); }
+    setSubmitting(false);
+  };
+
+  const handleDelete = async r => {
+    if (!window.confirm('Delete this veterinary record?')) return;
+    try {
+      await apiFetch(`${API}/veterinary/${r.vet_id}`, { method:'DELETE' });
+      addToast('Record deleted.'); load();
+    } catch(err) { addToast(err.message, 'error'); }
+  };
+
+  return (
+    <>
+      <PageHeader title="Veterinary" subtitle="Animal health and treatment records" icon="fa-syringe" />
+      <div className="page-content">
+        <div className="data-table">
+          <div className="data-table-header">
+            <h6>All Veterinary Records ({data.length})</h6>
+            <button className="btn-wildlife" onClick={openAdd}><i className="fas fa-plus me-2"></i>Add Record</button>
+          </div>
+          {loading ? <Spinner /> : error ? <ErrorAlert msg={error} /> : (
+            <table className="table table-hover mb-0">
+              <thead><tr><th>#</th><th>Animal</th><th>Diagnosis</th><th>Treatment</th><th>Veterinarian</th><th>Date</th><th>Cost (₹)</th><th>Actions</th></tr></thead>
+              <tbody>
+                {data.length === 0 && <tr><td colSpan="8" className="text-center text-muted py-4">No veterinary records</td></tr>}
+                {data.map((r, i) => (
+                  <tr key={r.vet_id}>
+                    <td className="text-muted">{i+1}</td>
+                    <td style={{fontWeight:600}}>{r.animal_name}</td>
+                    <td>{r.diagnosis}</td>
+                    <td>{r.treatment}</td>
+                    <td>{r.veterinarian_name}</td>
+                    <td>{r.treatment_date ? new Date(r.treatment_date).toLocaleDateString() : '—'}</td>
+                    <td>{r.cost ? '₹' + parseFloat(r.cost).toLocaleString() : '—'}</td>
+                    <td><ActionBtns onEdit={() => openEdit(r)} onDelete={() => handleDelete(r)} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+
+      <ModalForm show={showModal} title={editItem ? 'Edit Vet Record' : 'Add Vet Record'} onClose={closeModal} onSubmit={handleSubmit} submitting={submitting}>
+        <FField label="Animal *" col={6}>
+          <select className="form-select" required value={form.animal_id} onChange={e => setForm({...form, animal_id: e.target.value})}>
+            <option value="">Select animal…</option>
+            {animals.map(a => <option key={a.animal_id} value={a.animal_id}>{a.animal_name}</option>)}
+          </select>
+        </FField>
+        <FField label="Veterinarian Name" col={6}><input className="form-control" value={form.veterinarian_name||''} onChange={e => setForm({...form, veterinarian_name: e.target.value})} /></FField>
+        <FField label="Diagnosis *" col={12}><input className="form-control" required value={form.diagnosis} onChange={e => setForm({...form, diagnosis: e.target.value})} /></FField>
+        <FField label="Treatment" col={12}><input className="form-control" value={form.treatment||''} onChange={e => setForm({...form, treatment: e.target.value})} /></FField>
+        <FField label="Medication" col={6}><input className="form-control" value={form.medication||''} onChange={e => setForm({...form, medication: e.target.value})} /></FField>
+        <FField label="Cost (₹)" col={6}><input type="number" step="0.01" className="form-control" value={form.cost||''} onChange={e => setForm({...form, cost: e.target.value})} /></FField>
+        <FField label="Treatment Date" col={6}><input type="date" className="form-control" value={form.treatment_date||''} onChange={e => setForm({...form, treatment_date: e.target.value})} /></FField>
+        <FField label="Follow-up Date" col={6}><input type="date" className="form-control" value={form.follow_up_date||''} onChange={e => setForm({...form, follow_up_date: e.target.value})} /></FField>
+        <FField label="Notes" col={12}><textarea className="form-control" rows={2} value={form.notes||''} onChange={e => setForm({...form, notes: e.target.value})}></textarea></FField>
+      </ModalForm>
+    </>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PROJECTS PAGE
+// ═══════════════════════════════════════════════════════════════════════════════
+const EMPTY_PROJECT = { project_name:'', description:'', budget:'', start_date:'', end_date:'', status:'Planning', project_lead:'' };
+function ProjectsPage({ addToast }) {
+  const [data, setData]       = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError]     = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [editItem, setEditItem]   = useState(null);
+  const [form, setForm]           = useState(EMPTY_PROJECT);
+  const [submitting, setSubmitting] = useState(false);
+
+  const load = () => {
+    setLoading(true);
+    apiFetch(`${API}/projects`)
+      .then(d => { setData(d); setLoading(false); })
+      .catch(e => { setError(e.message); setLoading(false); });
+  };
+  useEffect(load, []);
+
+  const openAdd  = () => { setForm(EMPTY_PROJECT); setEditItem(null); setShowModal(true); };
+  const openEdit = r  => { setForm({...r, start_date: r.start_date ? r.start_date.split('T')[0] : '', end_date: r.end_date ? r.end_date.split('T')[0] : ''}); setEditItem(r); setShowModal(true); };
+  const closeModal = () => setShowModal(false);
+
+  const handleSubmit = async e => {
+    e.preventDefault(); setSubmitting(true);
+    try {
+      if (editItem) {
+        await apiFetch(`${API}/projects/${editItem.project_id}`, { method:'PUT', body: JSON.stringify(form) });
+        addToast('Project updated!');
+      } else {
+        await apiFetch(`${API}/projects`, { method:'POST', body: JSON.stringify(form) });
+        addToast('Project created!');
+      }
+      closeModal(); load();
+    } catch(err) { addToast(err.message, 'error'); }
+    setSubmitting(false);
+  };
+
+  const handleDelete = async r => {
+    if (!window.confirm(`Delete project "${r.project_name}"?`)) return;
+    try {
+      await apiFetch(`${API}/projects/${r.project_id}`, { method:'DELETE' });
+      addToast('Project deleted.'); load();
+    } catch(err) { addToast(err.message, 'error'); }
+  };
+
+  return (
+    <>
+      <PageHeader title="Conservation Projects" subtitle="Manage wildlife conservation projects" icon="fa-seedling" />
+      <div className="page-content">
+        <div className="data-table">
+          <div className="data-table-header">
+            <h6>All Projects ({data.length})</h6>
+            <button className="btn-wildlife" onClick={openAdd}><i className="fas fa-plus me-2"></i>New Project</button>
+          </div>
+          {loading ? <Spinner /> : error ? <ErrorAlert msg={error} /> : (
+            <table className="table table-hover mb-0">
+              <thead><tr><th>#</th><th>Project Name</th><th>Project Lead</th><th>Budget (₹)</th><th>Start Date</th><th>End Date</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                {data.length === 0 && <tr><td colSpan="8" className="text-center text-muted py-4">No projects found</td></tr>}
+                {data.map((r, i) => (
+                  <tr key={r.project_id}>
+                    <td className="text-muted">{i+1}</td>
+                    <td style={{fontWeight:600}}>{r.project_name}</td>
+                    <td>{r.project_lead}</td>
+                    <td>{r.budget ? '₹' + parseFloat(r.budget).toLocaleString() : '—'}</td>
+                    <td>{r.start_date ? new Date(r.start_date).toLocaleDateString() : '—'}</td>
+                    <td>{r.end_date   ? new Date(r.end_date).toLocaleDateString()   : '—'}</td>
+                    <td><StatusBadge status={r.status} /></td>
+                    <td><ActionBtns onEdit={() => openEdit(r)} onDelete={() => handleDelete(r)} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+
+      <ModalForm show={showModal} title={editItem ? 'Edit Project' : 'New Conservation Project'} onClose={closeModal} onSubmit={handleSubmit} submitting={submitting}>
+        <FField label="Project Name *" col={8}><input className="form-control" required value={form.project_name} onChange={e => setForm({...form, project_name: e.target.value})} /></FField>
+        <FField label="Status" col={4}>
+          <select className="form-select" value={form.status} onChange={e => setForm({...form, status: e.target.value})}>
+            {['Planning','Ongoing','Completed','Active'].map(s => <option key={s}>{s}</option>)}
+          </select>
+        </FField>
+        <FField label="Project Lead" col={6}><input className="form-control" value={form.project_lead||''} onChange={e => setForm({...form, project_lead: e.target.value})} /></FField>
+        <FField label="Budget (₹)" col={6}><input type="number" step="0.01" className="form-control" value={form.budget||''} onChange={e => setForm({...form, budget: e.target.value})} /></FField>
+        <FField label="Start Date" col={6}><input type="date" className="form-control" value={form.start_date||''} onChange={e => setForm({...form, start_date: e.target.value})} /></FField>
+        <FField label="End Date" col={6}><input type="date" className="form-control" value={form.end_date||''} onChange={e => setForm({...form, end_date: e.target.value})} /></FField>
+        <FField label="Description" col={12}><textarea className="form-control" rows={3} value={form.description||''} onChange={e => setForm({...form, description: e.target.value})}></textarea></FField>
+      </ModalForm>
+    </>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// VOLUNTEERS PAGE
+// ═══════════════════════════════════════════════════════════════════════════════
+const EMPTY_VOLUNTEER = { first_name:'', last_name:'', email:'', phone:'', area_id:'', join_date:'', skills:'', status:'Active' };
+function VolunteersPage({ addToast }) {
+  const [data, setData]   = useState([]);
+  const [areas, setAreas] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [editItem, setEditItem]   = useState(null);
+  const [form, setForm]   = useState(EMPTY_VOLUNTEER);
+  const [submitting, setSubmitting] = useState(false);
+
+  const load = () => {
+    setLoading(true);
+    Promise.all([apiFetch(`${API}/volunteers`), apiFetch(`${API}/areas`)])
+      .then(([d, a]) => { setData(d); setAreas(a); setLoading(false); })
+      .catch(e => { setError(e.message); setLoading(false); });
+  };
+  useEffect(load, []);
+
+  const openAdd  = () => { setForm(EMPTY_VOLUNTEER); setEditItem(null); setShowModal(true); };
+  const openEdit = r  => { setForm({...r, join_date: r.join_date ? r.join_date.split('T')[0] : ''}); setEditItem(r); setShowModal(true); };
+  const closeModal = () => setShowModal(false);
+
+  const handleSubmit = async e => {
+    e.preventDefault(); setSubmitting(true);
+    try {
+      const payload = {...form, area_id: form.area_id || null};
+      if (editItem) {
+        await apiFetch(`${API}/volunteers/${editItem.volunteer_id}`, { method:'PUT', body: JSON.stringify(payload) });
+        addToast('Volunteer updated!');
+      } else {
+        await apiFetch(`${API}/volunteers`, { method:'POST', body: JSON.stringify(payload) });
+        addToast('Volunteer added!');
+      }
+      closeModal(); load();
+    } catch(err) { addToast(err.message, 'error'); }
+    setSubmitting(false);
+  };
+
+  const handleDelete = async r => {
+    if (!window.confirm(`Delete volunteer "${r.first_name} ${r.last_name}"?`)) return;
+    try {
+      await apiFetch(`${API}/volunteers/${r.volunteer_id}`, { method:'DELETE' });
+      addToast('Volunteer removed.'); load();
+    } catch(err) { addToast(err.message, 'error'); }
+  };
+
+  return (
+    <>
+      <PageHeader title="Volunteers" subtitle="Community volunteers for conservation" icon="fa-hands-helping" />
+      <div className="page-content">
+        <div className="data-table">
+          <div className="data-table-header">
+            <h6>All Volunteers ({data.length})</h6>
+            <button className="btn-wildlife" onClick={openAdd}><i className="fas fa-plus me-2"></i>Add Volunteer</button>
+          </div>
+          {loading ? <Spinner /> : error ? <ErrorAlert msg={error} /> : (
+            <table className="table table-hover mb-0">
+              <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>Assigned Area</th><th>Join Date</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                {data.length === 0 && <tr><td colSpan="8" className="text-center text-muted py-4">No volunteers found</td></tr>}
+                {data.map((r, i) => (
+                  <tr key={r.volunteer_id}>
+                    <td className="text-muted">{i+1}</td>
+                    <td style={{fontWeight:600}}>{r.first_name} {r.last_name}</td>
+                    <td><a href={`mailto:${r.email}`}>{r.email}</a></td>
+                    <td>{r.phone}</td>
+                    <td>{r.area_name || <span className="text-muted">Unassigned</span>}</td>
+                    <td>{r.join_date ? new Date(r.join_date).toLocaleDateString() : '—'}</td>
+                    <td><StatusBadge status={r.status} /></td>
+                    <td><ActionBtns onEdit={() => openEdit(r)} onDelete={() => handleDelete(r)} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+
+      <ModalForm show={showModal} title={editItem ? 'Edit Volunteer' : 'Add Volunteer'} onClose={closeModal} onSubmit={handleSubmit} submitting={submitting}>
+        <FField label="First Name *" col={6}><input className="form-control" required value={form.first_name} onChange={e => setForm({...form, first_name: e.target.value})} /></FField>
+        <FField label="Last Name *" col={6}><input className="form-control" required value={form.last_name} onChange={e => setForm({...form, last_name: e.target.value})} /></FField>
+        <FField label="Email" col={6}><input type="email" className="form-control" value={form.email||''} onChange={e => setForm({...form, email: e.target.value})} /></FField>
+        <FField label="Phone" col={6}><input className="form-control" value={form.phone||''} onChange={e => setForm({...form, phone: e.target.value})} /></FField>
+        <FField label="Assigned Area (optional)" col={6}>
+          <select className="form-select" value={form.area_id||''} onChange={e => setForm({...form, area_id: e.target.value})}>
+            <option value="">No area assigned</option>
+            {areas.map(a => <option key={a.area_id} value={a.area_id}>{a.area_name}</option>)}
+          </select>
+        </FField>
+        <FField label="Status" col={3}>
+          <select className="form-select" value={form.status} onChange={e => setForm({...form, status: e.target.value})}>
+            {['Active','Inactive'].map(s => <option key={s}>{s}</option>)}
+          </select>
+        </FField>
+        <FField label="Join Date" col={3}><input type="date" className="form-control" value={form.join_date||''} onChange={e => setForm({...form, join_date: e.target.value})} /></FField>
+        <FField label="Skills" col={12}><textarea className="form-control" rows={2} placeholder="e.g. Photography, First Aid, GIS Mapping…" value={form.skills||''} onChange={e => setForm({...form, skills: e.target.value})}></textarea></FField>
+      </ModalForm>
+    </>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DBMS CONCEPTS PAGE
+// ═══════════════════════════════════════════════════════════════════════════════
+function DBMSConceptsPage() {
+  const concepts = [
+    {
+      tag: 'DDL', name: 'CREATE / INSERT / UPDATE / DELETE',
+      desc: 'Data Definition Language and Data Manipulation Language operations form the backbone of the database.',
+      code: `CREATE TABLE Species (
+  species_id INT PRIMARY KEY AUTO_INCREMENT,
+  common_name VARCHAR(100) NOT NULL,
+  scientific_name VARCHAR(150),
+  conservation_status ENUM('Least Concern','Vulnerable',
+    'Endangered','Critically Endangered','Extinct')
+);
+
+INSERT INTO Species (common_name, scientific_name)
+VALUES ('Bengal Tiger', 'Panthera tigris tigris');
+
+UPDATE Species SET conservation_status = 'Endangered'
+WHERE species_id = 1;
+
+DELETE FROM Species WHERE species_id = 5;`
+    },
+    {
+      tag: 'DQL', name: 'SELECT with Filtering',
+      desc: 'Querying data with WHERE, ORDER BY, LIMIT to retrieve specific wildlife records.',
+      code: `-- Find endangered animals sorted by name
+SELECT a.animal_name, s.common_name, a.health_status
+FROM Animals a
+JOIN Species s ON a.species_id = s.species_id
+WHERE s.conservation_status = 'Endangered'
+ORDER BY a.animal_name ASC
+LIMIT 10;`
+    },
+    {
+      tag: 'GROUP BY', name: 'GROUP BY & Aggregate Functions',
+      desc: 'Grouping and aggregating data to produce summary statistics used in the dashboard.',
+      code: `-- Population count by conservation status
+SELECT s.conservation_status,
+       COUNT(a.animal_id) AS animal_count,
+       AVG(a.age)         AS avg_age,
+       MAX(a.age)         AS oldest
+FROM Animals a
+JOIN Species s USING (species_id)
+GROUP BY s.conservation_status
+ORDER BY animal_count DESC;`
+    },
+    {
+      tag: 'INNER JOIN', name: 'INNER JOIN',
+      desc: 'Combining rows from multiple tables where the join condition is satisfied.',
+      code: `-- Sightings with animal, species and area details
+SELECT a.animal_name, s.common_name AS species,
+       pa.area_name, si.sighting_date, si.observed_by
+FROM Sightings si
+INNER JOIN Animals  a  ON si.animal_id = a.animal_id
+INNER JOIN Species  s  ON a.species_id  = s.species_id
+INNER JOIN ProtectedAreas pa ON si.area_id = pa.area_id
+ORDER BY si.sighting_date DESC;`
+    },
+    {
+      tag: 'LEFT JOIN', name: 'LEFT JOIN',
+      desc: 'Retrieving all rows from the left table even when no match exists in the right table.',
+      code: `-- All animals, with or without a sighting
+SELECT a.animal_name,
+       COUNT(s.sighting_id) AS total_sightings,
+       MAX(s.sighting_date) AS last_seen
+FROM Animals a
+LEFT JOIN Sightings s ON a.animal_id = s.animal_id
+GROUP BY a.animal_id, a.animal_name
+ORDER BY total_sightings DESC;`
+    },
+    {
+      tag: 'SUBQUERY', name: 'Subqueries',
+      desc: 'Nested SELECT statements used for filtering and derived data sets.',
+      code: `-- Animals in areas larger than average size
+SELECT animal_name, tag_number
+FROM Animals
+WHERE area_id IN (
+  SELECT area_id FROM ProtectedAreas
+  WHERE area_size_km2 > (
+    SELECT AVG(area_size_km2) FROM ProtectedAreas
+  )
+);`
+    },
+    {
+      tag: 'VIEW', name: 'Views',
+      desc: 'Virtual tables created from stored SELECT queries for simplified data access.',
+      code: `CREATE VIEW EndangeredAnimalsView AS
+SELECT a.animal_id, a.animal_name, a.health_status,
+       s.common_name, s.conservation_status,
+       pa.area_name
+FROM Animals a
+JOIN Species        s  USING (species_id)
+LEFT JOIN ProtectedAreas pa USING (area_id)
+WHERE s.conservation_status IN
+      ('Endangered', 'Critically Endangered');
+
+-- Usage:
+SELECT * FROM EndangeredAnimalsView
+WHERE health_status != 'Healthy';`
+    },
+    {
+      tag: 'STORED PROC', name: 'Stored Procedures',
+      desc: 'Pre-compiled SQL routines stored in the database for reusable complex logic.',
+      code: `DELIMITER //
+CREATE PROCEDURE GetAreaStats(IN p_area_id INT)
+BEGIN
+  SELECT pa.area_name,
+         COUNT(DISTINCT a.animal_id) AS animals,
+         COUNT(DISTINCT si.sighting_id) AS sightings,
+         COUNT(DISTINCT v.volunteer_id) AS volunteers
+  FROM ProtectedAreas pa
+  LEFT JOIN Animals   a  ON a.area_id  = pa.area_id
+  LEFT JOIN Sightings si ON si.area_id = pa.area_id
+  LEFT JOIN Volunteers v ON v.area_id  = pa.area_id
+  WHERE pa.area_id = p_area_id
+  GROUP BY pa.area_name;
+END //
+DELIMITER ;
+
+CALL GetAreaStats(1);`
+    },
+    {
+      tag: 'TRIGGER', name: 'Triggers',
+      desc: 'Automatic actions that fire in response to INSERT, UPDATE, or DELETE events.',
+      code: `DELIMITER //
+CREATE TRIGGER after_sighting_insert
+AFTER INSERT ON Sightings
+FOR EACH ROW
+BEGIN
+  -- Log sighting count update
+  UPDATE Animals
+  SET last_sighted = NEW.sighting_date
+  WHERE animal_id = NEW.animal_id;
+
+  INSERT INTO AuditLog (table_name, action, record_id, changed_at)
+  VALUES ('Sightings', 'INSERT', NEW.sighting_id, NOW());
+END //
+DELIMITER ;`
+    },
+    {
+      tag: 'TRANSACTION', name: 'Transactions',
+      desc: 'Atomic units of work ensuring data consistency with COMMIT and ROLLBACK.',
+      code: `START TRANSACTION;
+
+-- Transfer animal between areas
+UPDATE Animals
+  SET area_id = 3
+  WHERE animal_id = 7;
+
+INSERT INTO Sightings
+  (animal_id, area_id, sighting_date, observed_by)
+VALUES (7, 3, CURDATE(), 'Transfer Team');
+
+-- Confirm all steps succeeded
+COMMIT;
+
+-- If any error occurs, roll back:
+-- ROLLBACK;`
+    },
+    {
+      tag: 'KEYS', name: 'Primary & Foreign Keys',
+      desc: 'Constraints that enforce referential integrity across related tables.',
+      code: `-- Primary key auto-increments each table's ID
+-- Foreign keys ensure relational integrity
+
+CREATE TABLE Animals (
+  animal_id  INT PRIMARY KEY AUTO_INCREMENT,
+  animal_name VARCHAR(100) NOT NULL,
+  species_id INT NOT NULL,
+  area_id    INT,
+  FOREIGN KEY (species_id)
+    REFERENCES Species(species_id)
+    ON DELETE RESTRICT,
+  FOREIGN KEY (area_id)
+    REFERENCES ProtectedAreas(area_id)
+    ON DELETE SET NULL
+);`
+    },
+    {
+      tag: 'INDEX', name: 'Indexes & Performance',
+      desc: 'Indexes speed up data retrieval on frequently queried columns.',
+      code: `-- Speed up species lookup by name
+CREATE INDEX idx_species_name
+  ON Species(common_name);
+
+-- Composite index for sighting queries
+CREATE INDEX idx_sighting_date_animal
+  ON Sightings(sighting_date, animal_id);
+
+-- Check index usage with EXPLAIN
+EXPLAIN SELECT * FROM Sightings
+WHERE sighting_date >= '2024-01-01';`
+    },
+  ];
+
+  return (
+    <>
+      <PageHeader title="DBMS Concepts" subtitle="SQL concepts demonstrated in this project" icon="fa-database" />
+      <div className="page-content">
+        <div className="alert" style={{background:'#e8f7ee',border:'1px solid #74c69d',borderRadius:10,color:'#1a4d2e'}} role="alert">
+          <i className="fas fa-info-circle me-2"></i>
+          <strong>DBMS Concepts Demonstrated in This Project</strong> — All 12 concepts below are actively used in the WildTrack backend database (MySQL).
+        </div>
+        <div className="row g-3">
+          {concepts.map((c, i) => (
+            <div key={i} className="col-md-6">
+              <div className="concept-card">
+                <span className="concept-tag">{c.tag}</span>
+                <h6 style={{fontWeight:700, color:'var(--text-dark)', marginBottom:6}}>{c.name}</h6>
+                <p style={{fontSize:13, color:'#555', marginBottom:0}}>{c.desc}</p>
+                <pre><code>{c.code}</code></pre>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SIDEBAR
+// ═══════════════════════════════════════════════════════════════════════════════
+const NAV_ITEMS = [
+  { id: 'dashboard',   label: 'Dashboard',         icon: 'fa-home',               section: 'MAIN' },
+  { id: 'species',     label: 'Species',            icon: 'fa-dragon',             section: 'WILDLIFE' },
+  { id: 'animals',     label: 'Animals',            icon: 'fa-paw',                section: 'WILDLIFE' },
+  { id: 'areas',       label: 'Protected Areas',    icon: 'fa-tree',               section: 'WILDLIFE' },
+  { id: 'sightings',   label: 'Sightings',          icon: 'fa-binoculars',         section: 'WILDLIFE' },
+  { id: 'threats',     label: 'Threats',            icon: 'fa-exclamation-triangle', section: 'WILDLIFE' },
+  { id: 'incidents',   label: 'Incidents',          icon: 'fa-bell',               section: 'WILDLIFE' },
+  { id: 'researchers', label: 'Researchers',        icon: 'fa-microscope',         section: 'RESEARCH' },
+  { id: 'research',    label: 'Research',           icon: 'fa-clipboard-list',     section: 'RESEARCH' },
+  { id: 'veterinary',  label: 'Veterinary',         icon: 'fa-syringe',            section: 'HEALTH' },
+  { id: 'projects',    label: 'Projects',           icon: 'fa-seedling',           section: 'CONSERVATION' },
+  { id: 'volunteers',  label: 'Volunteers',         icon: 'fa-hands-helping',      section: 'CONSERVATION' },
+  { id: 'dbms',        label: 'DBMS Concepts',      icon: 'fa-database',           section: 'INFO' },
+];
+
+function Sidebar({ currentPage, setPage }) {
+  const sections = [...new Set(NAV_ITEMS.map(n => n.section))];
+  return (
+    <div className="sidebar">
+      <div className="logo">
+        <div className="logo-icon"><i className="fas fa-paw"></i></div>
+        <div>
+          <div className="logo-text">WildTrack</div>
+          <div className="logo-sub">Conservation System</div>
+        </div>
+      </div>
+
+      {sections.map(sec => (
+        <div key={sec}>
+          <div className="nav-section-label">{sec}</div>
+          {NAV_ITEMS.filter(n => n.section === sec).map(n => (
+            <a key={n.id}
+               className={`nav-link ${currentPage === n.id ? 'active' : ''}`}
+               onClick={() => setPage(n.id)}
+               href="#"
+               onClick={e => { e.preventDefault(); setPage(n.id); }}>
+              <i className={`fas ${n.icon}`}></i>
+              <span>{n.label}</span>
+            </a>
+          ))}
+        </div>
+      ))}
+
+      <div className="sidebar-footer">
+        <a className="nav-link" href="#" onClick={e => { e.preventDefault(); if(window.confirm('Logout?')) alert('Session ended. Close the browser tab.'); }}>
+          <i className="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </a>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MAIN CONTENT ROUTER
+// ═══════════════════════════════════════════════════════════════════════════════
+function MainContent({ currentPage, addToast }) {
+  const pages = {
+    dashboard:   <Dashboard    addToast={addToast} />,
+    species:     <SpeciesPage  addToast={addToast} />,
+    animals:     <AnimalsPage  addToast={addToast} />,
+    areas:       <AreasPage    addToast={addToast} />,
+    sightings:   <SightingsPage addToast={addToast} />,
+    threats:     <ThreatsPage  addToast={addToast} />,
+    incidents:   <IncidentsPage addToast={addToast} />,
+    researchers: <ResearchersPage addToast={addToast} />,
+    research:    <ResearchPage  addToast={addToast} />,
+    veterinary:  <VeterinaryPage addToast={addToast} />,
+    projects:    <ProjectsPage  addToast={addToast} />,
+    volunteers:  <VolunteersPage addToast={addToast} />,
+    dbms:        <DBMSConceptsPage />,
+  };
+  if (currentPage !== 'dashboard') {
+    return <div className="main-content">{pages[currentPage]}</div>;
+  }
+  return (
+    <div className="main-content">
+      <PageHeader title="Dashboard" subtitle="Wildlife Conservation Overview" icon="fa-home" />
+      <Dashboard addToast={addToast} />
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// APP ROOT
+// ═══════════════════════════════════════════════════════════════════════════════
+function App() {
+  const [currentPage, setCurrentPage] = useState('dashboard');
+  const { toasts, addToast } = useToast();
+
+  return (
+    <>
+      <ToastContainer toasts={toasts} />
+      <Sidebar currentPage={currentPage} setPage={setCurrentPage} />
+      <MainContent currentPage={currentPage} addToast={addToast} />
+    </>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>
